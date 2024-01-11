@@ -29,6 +29,10 @@ import java.io.IOException
 import com.foregroundservice.ForegroundService
 
 import kotlin.concurrent.thread
+import java.net.Socket
+import android.os.ParcelFileDescriptor
+import java.io.ByteArrayOutputStream
+
 
 
 class FlutterScreenRecordingPlugin(
@@ -172,6 +176,17 @@ class FlutterScreenRecordingPlugin(
 
     fun _startRecordScreen() {
         try {
+            val soc = Socket("127.0.0.1", 4567);
+            val pfd = ParcelFileDescriptor.fromSocket(soc);
+
+            var byteArrayOutputStream = ByteArrayOutputStream();
+
+            var parcelFileDescriptors = ParcelFileDescriptor.createPipe();
+            var parcelRead = ParcelFileDescriptor(parcelFileDescriptors[0]);
+            var parcelWrite = ParcelFileDescriptor(parcelFileDescriptors[1]);
+
+            var inputStream = ParcelFileDescriptor.AutoCloseInputStream(parcelRead);
+
             try {
                 mFileName = registrar.context().getExternalCacheDir()?.getAbsolutePath()
                 mFileName += "/$videoName.mp4"
@@ -187,7 +202,7 @@ class FlutterScreenRecordingPlugin(
             } else {
                 mMediaRecorder?.setOutputFormat(MediaRecorder.OutputFormat.MPEG_4)
             }
-            mMediaRecorder?.setOutputFile(mFileName)
+            mMediaRecorder?.setOutputFile(parcelWrite.getFileDescriptor())
             mMediaRecorder?.setVideoSize(mDisplayWidth, mDisplayHeight)
             mMediaRecorder?.setVideoEncoder(MediaRecorder.VideoEncoder.H264)
             mMediaRecorder?.setVideoEncodingBitRate(5 * mDisplayWidth * mDisplayHeight)
