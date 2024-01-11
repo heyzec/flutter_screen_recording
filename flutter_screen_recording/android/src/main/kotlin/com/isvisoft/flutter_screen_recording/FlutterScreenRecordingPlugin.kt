@@ -28,6 +28,8 @@ import java.io.IOException
 
 import com.foregroundservice.ForegroundService
 
+import kotlin.concurrent.thread
+
 
 class FlutterScreenRecordingPlugin(
         private val registrar: Registrar
@@ -162,6 +164,13 @@ class FlutterScreenRecordingPlugin(
     }
 
     fun startRecordScreen() {
+        thread {
+            _startRecordScreen()
+        }
+
+    }
+
+    fun _startRecordScreen() {
         try {
             try {
                 mFileName = registrar.context().getExternalCacheDir()?.getAbsolutePath()
