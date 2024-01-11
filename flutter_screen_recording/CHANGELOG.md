@@ -1,11 +1,3 @@
-## 2.0.9
-
-- Update flutter
-
-## 2.0.8
-
-- Implemented null-safety
-
 ## 2.0.7
 
 - Bugs Android 12 fixed
